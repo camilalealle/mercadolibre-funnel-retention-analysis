@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Environment variables and credentials
+.env
+.env.*
+
+# Original database
+data/raw/*.db
+data/raw/*.sqlite
+
+# Temporary files
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# Local exploratory exports
+*.xlsx
+
