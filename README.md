@@ -49,7 +49,7 @@ An analysis of user behavior in an educational MercadoLibre-themed dataset: purc
 
 ## Dashboard
 
-📊 [Interactive HTML Dashboard](dashboard/mercadolibre_dashboard_ejecutivo.html)
+📊 [View Interactive Dashboard](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html)
 
 The dashboard brings together a short executive overview, the conversion funnel, and D7–D28 retention. Open the HTML file in a browser after downloading or cloning the repository. A public web preview can be added when GitHub Pages is configured.
 

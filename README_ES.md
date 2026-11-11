@@ -49,7 +49,7 @@ Análisis del comportamiento de usuarios en un conjunto de datos educativo inspi
 
 ## Dashboard
 
-📊 [Dashboard HTML interactivo](dashboard/mercadolibre_dashboard_ejecutivo.html)
+📊 [Ver dashboard interactivo](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html)
 
 El dashboard reúne un resumen ejecutivo, el embudo de conversión y la retención D7–D28. Para visualizarlo, abre el archivo HTML en un navegador después de descargar o clonar el repositorio. Cuando se configure GitHub Pages, se podrá añadir un enlace de visualización pública.
 
