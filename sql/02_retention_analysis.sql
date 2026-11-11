@@ -225,3 +225,59 @@ FROM user_retention
 
 GROUP BY device_category
 ORDER BY total_users DESC;
+
+
+-- ============================================================
+-- 5. DAILY USER RETENTION (D0-D28)
+-- ============================================================
+-- Calculates daily activity retention after signup.
+-- Identifies the largest percentage-point declines.
+-- Exact duplicate records are excluded.
+-- ============================================================
+
+WITH retention_clean AS (
+    SELECT DISTINCT
+        user_id,
+        day_after_signup,
+        active
+    FROM mercadolibre_retention
+),
+
+daily_retention AS (
+    SELECT
+        day_after_signup AS retention_day,
+        COUNT(DISTINCT user_id) AS total_users,
+        COUNT(DISTINCT CASE
+            WHEN active = 1 THEN user_id
+        END) AS active_users,
+        100.0 * COUNT(DISTINCT CASE
+            WHEN active = 1 THEN user_id
+        END) / COUNT(DISTINCT user_id) AS retention_pct
+    FROM retention_clean
+    GROUP BY day_after_signup
+),
+
+daily_comparison AS (
+    SELECT
+        retention_day,
+        total_users,
+        active_users,
+        retention_pct,
+        LAG(retention_pct) OVER (
+            ORDER BY retention_day
+        ) AS previous_day_pct
+    FROM daily_retention
+)
+
+SELECT
+    retention_day,
+    total_users,
+    active_users,
+    ROUND(retention_pct, 2) AS retention_pct,
+    ROUND(
+        retention_pct - previous_day_pct,
+        2
+    ) AS change_pp
+FROM daily_comparison
+ORDER BY retention_day;
+

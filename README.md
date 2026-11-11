@@ -29,7 +29,7 @@ An analysis of user behavior in an educational MercadoLibre-themed dataset: purc
 - **Product selection to cart is the main observed bottleneck.** In the strict chronological funnel, users drop from **845** at `select_item / select_promotion` to **104** at `add_to_cart` (**87.69%** did not progress to the next required step).
 - **A strict funnel completion rate of 0.91%.** **11 of 1,204** users with `first_visit` completed all seven required stages in order. This is **not** the platform's overall sales conversion rate.
 - **Purchase volume is too small for strong geographic conclusions.** **17 users** recorded a `purchase`; only **11** had a purchase after an observed `first_visit` in the period. Country-level conversion rates are exploratory.
-- **Activity retention falls sharply during the first month.** Across **12,000 registered users**, D7 retention was **24.23%**, compared with **2.60% at D28**.
+- **The sharpest activity decline occurs immediately after signup.** Among **12,000 registered users**, daily activity drops from **97.88% at D0** to **51.35% at D1** (**−46.53 percentage points**), then reaches **24.23% at D7** and **2.60% at D28**.
 - **The decline appears across cohorts and devices.** Monthly cohorts show similar patterns; mobile users have higher observed D7 retention (**25.25%**) than desktop users (**21.23%**), without establishing a causal effect.
 - **Data quality matters.** The retention table contains **348,000 distinct rows recorded twice**; event timestamps also require standardization to support chronological analysis.
 
@@ -49,9 +49,9 @@ An analysis of user behavior in an educational MercadoLibre-themed dataset: purc
 
 ## Dashboard
 
-📊 [Interactive HTML Dashboard](dashboard/mercadolibre_dashboard_ejecutivo.html)
+📊 [Interactive HTML Dashboard](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html)
 
-The dashboard brings together a short executive overview, the conversion funnel, and D7–D28 retention. Open the HTML file in a browser after downloading or cloning the repository. A public web preview can be added when GitHub Pages is configured.
+The published dashboard presents an executive overview, the conversion funnel, and D7–D28 retention. The newly validated daily D0–D28 curve is documented in the retention notebook; it has not yet been added to the HTML dashboard.
 
 *Funnel and retention figures come from different datasets and should not be interpreted as one connected customer journey.*
 
@@ -106,12 +106,15 @@ Uruguay has the highest *observed* rate, but it reflects only **one purchaser**.
 
 | Day after signup | Active users | Retention rate |
 |---|---:|---:|
+| D0 | 11,746 | **97.88%** |
+| D1 | 6,162 | **51.35%** |
+| D3 | 4,739 | **39.49%** |
 | D7 | 2,908 | **24.23%** |
 | D14 | 1,389 | **11.57%** |
 | D21 | 606 | **5.05%** |
 | D28 | 312 | **2.60%** |
 
-Retention measures activity **on the specified day**, not uninterrupted activity throughout the preceding days. The largest decline in percentage points between the days shown is **12.66 pp**, from D7 to D14.
+Across the full D0–D28 daily curve, the largest consecutive-day decrease occurs from **D0 to D1 (−46.53 percentage points)**. This highlights early engagement as an area for investigation, but does not establish why activity decreases. Retention measures activity **on each specific day**, not uninterrupted activity or permanent churn.
 
 ### 4. Cohort and segment retention
 
@@ -147,7 +150,7 @@ The source SQLite database is kept unchanged. The analysis applies relevant dedu
 
 1. **Investigate the product selection-to-cart transition.** Review product information, pricing clarity, shipping expectations, and usability before deciding what to change.
 2. **Review cart-to-checkout progression.** Investigate possible friction and validate event tracking before attributing missing stages to abandonment.
-3. **Focus on early user engagement.** Explore onboarding and re-engagement initiatives, then test whether they improve D7, D14 and D28 retention.
+3. **Investigate first-day engagement.** Examine the registration-to-D1 experience, onboarding, and early product discovery. Test potential improvements using D1 and D7 activity as outcome metrics; the observed drop does not identify its cause.
 4. **Track retention by cohort and segment.** Monitor changes over time rather than making decisions based on small descriptive differences.
 5. **Collect more conversion observations.** A larger purchase sample is needed before drawing confident conclusions about country performance.
 
@@ -160,7 +163,7 @@ The source SQLite database is kept unchanged. The analysis applies relevant dedu
 | 1 | Can we trust the data? | Python, SQLite, Pandas | [01_data_exploration](notebooks/01_data_exploration.ipynb) |
 | 2 | Where do users stop progressing? | SQL (CTEs, joins, window functions), Python | [02_funnel_analysis](notebooks/02_funnel_analysis.ipynb) · [Funnel SQL](sql/01_funnel_analysis.sql) |
 | 3 | Do users remain active after signup? | SQL, Pandas, Matplotlib | [03_retention_analysis](notebooks/03_retention_analysis.ipynb) · [Retention SQL](sql/02_retention_analysis.sql) |
-| 4 | How do we communicate the findings? | HTML, interactive visualizations | [Dashboard](dashboard/mercadolibre_dashboard_ejecutivo.html) |
+| 4 | How do we communicate the findings? | HTML, interactive visualizations | [Dashboard](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html) |
 
 The notebooks and SQL scripts use a local SQLite source. SQL results were cross-checked between the notebooks and standalone queries.
 
@@ -173,7 +176,7 @@ The notebooks and SQL scripts use a local SQLite source. SQL results were cross-
 - **Strict funnel definition:** Full completion requires all seven stages in order, across potentially different sessions. Missing or out-of-order events reduce the count even when a purchase was recorded.
 - **Time quality:** `event_date` required formatting corrections, and the separate `event_times` field has limited precision. The recorded order is therefore subject to tracking limitations.
 - **Separate populations:** Funnel and retention are different source tables with different user counts and periods; their user-level relationship was not validated.
-- **Retention meaning:** D7, D14, D21 and D28 are day-specific activity measures, not continuous engagement or repeat purchases.
+- **Retention meaning:** D0–D28 percentages measure activity on individual days, not continuous engagement, permanent churn, or repeat purchases. Inactive users on D1 may return later.
 - **Causality:** Observed differences and declines do not identify their underlying causes; suggested interventions would require further investigation and testing.
 
 ---
@@ -226,7 +229,7 @@ Run the notebooks in numerical order (with `notebooks/` as the working directory
 - [Funnel Analysis](notebooks/02_funnel_analysis.ipynb)
 - [Retention Analysis](notebooks/03_retention_analysis.ipynb)
 
-The [SQL queries](sql/) can be run separately with SQLite, one statement at a time. The [interactive dashboard](dashboard/mercadolibre_dashboard_ejecutivo.html) can be opened in a browser without the database.
+The [SQL queries](sql/) can be run separately with SQLite, one statement at a time. The [interactive dashboard](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html) can be opened in a browser without the database.
 
 </details>
 

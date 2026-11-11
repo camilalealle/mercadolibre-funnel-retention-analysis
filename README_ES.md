@@ -29,7 +29,7 @@ Análisis del comportamiento de usuarios en un conjunto de datos educativo inspi
 - **La mayor pérdida observada ocurre entre selección y carrito.** En el embudo cronológico estricto, los usuarios pasan de **845** en `select_item / select_promotion` a **104** en `add_to_cart`: un **87,69 %** no avanzó a la siguiente etapa exigida.
 - **La finalización del embudo estricto es del 0,91 %.** **11 de 1.204** usuarios con `first_visit` completaron las siete etapas en orden. **No es la conversión general de ventas** de la plataforma.
 - **Hay muy pocas compras para comparar países con solidez.** **17 usuarios** registraron `purchase`; **11** realizaron una compra posterior a su `first_visit` observado en el período. Las tasas por país son exploratorias.
-- **La retención de actividad cae durante el primer mes.** Entre **12.000 usuarios registrados**, la retención D7 es del **24,23 %**, frente al **2,60 % en D28**.
+- **La mayor caída de actividad ocurre inmediatamente después del registro.** Entre **12.000 usuarios**, la actividad diaria pasa del **97,88 % en D0** al **51,35 % en D1** (**−46,53 puntos porcentuales**); después llega al **24,23 % en D7** y al **2,60 % en D28**.
 - **El descenso aparece en cohortes y dispositivos.** Las cohortes mensuales muestran patrones similares. Los usuarios móviles presentan una mayor retención D7 observada (**25,25 %**) que los de escritorio (**21,23 %**), sin que esto demuestre causalidad.
 - **La calidad de datos fue relevante.** La tabla de retención contiene **348.000 registros distintos, cada uno repetido dos veces**; también fue necesario normalizar fechas de eventos.
 
@@ -49,9 +49,9 @@ Análisis del comportamiento de usuarios en un conjunto de datos educativo inspi
 
 ## Dashboard
 
-📊 [Dashboard HTML interactivo](dashboard/mercadolibre_dashboard_ejecutivo.html)
+📊 [Dashboard HTML interactivo](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html)
 
-El dashboard reúne un resumen ejecutivo, el embudo de conversión y la retención D7–D28. Para visualizarlo, abre el archivo HTML en un navegador después de descargar o clonar el repositorio. Cuando se configure GitHub Pages, se podrá añadir un enlace de visualización pública.
+El dashboard publicado reúne un resumen ejecutivo, el embudo de conversión y la retención D7–D28. La nueva curva diaria D0–D28 ya está documentada en el notebook de retención, pero todavía no se ha incorporado al dashboard HTML.
 
 *Las métricas de funnel y retención provienen de datasets diferentes y no deben interpretarse como si describieran un único recorrido de clientes conectado.*
 
@@ -106,12 +106,15 @@ Uruguay tiene la tasa *observada* más alta, basada en **un solo comprador**. La
 
 | Día después del registro | Usuarios activos | Tasa de retención |
 |---|---:|---:|
+| D0 | 11.746 | **97,88 %** |
+| D1 | 6.162 | **51,35 %** |
+| D3 | 4.739 | **39,49 %** |
 | D7 | 2.908 | **24,23 %** |
 | D14 | 1.389 | **11,57 %** |
 | D21 | 606 | **5,05 %** |
 | D28 | 312 | **2,60 %** |
 
-La retención mide actividad **en un día específico**, no actividad continua durante todos los días anteriores. La mayor caída en puntos porcentuales entre los días mostrados ocurre de D7 a D14: **12,66 puntos porcentuales**.
+En la curva diaria completa D0–D28, la mayor disminución entre días consecutivos ocurre de **D0 a D1 (−46,53 puntos porcentuales)**. Este hallazgo justifica investigar la actividad temprana, pero no identifica la causa del descenso. La retención mide actividad **en cada día específico**, no actividad continua ni abandono definitivo.
 
 ### 4. Retención por cohortes y segmentos
 
@@ -147,7 +150,7 @@ La base SQLite original permanece sin modificaciones. La limpieza necesaria se a
 
 1. **Investigar la transición entre selección y carrito.** Revisar información de productos, claridad de precios, expectativas de envío y usabilidad antes de decidir cambios.
 2. **Revisar el paso de carrito a checkout.** Investigar posibles obstáculos y validar los eventos antes de atribuir diferencias de conteos a abandonos reales.
-3. **Priorizar la actividad temprana.** Explorar mejoras de incorporación y reactivación, y comprobar mediante experimentos si elevan D7, D14 y D28.
+3. **Investigar la actividad del primer día.** Examinar la experiencia entre el registro y D1, la incorporación y el descubrimiento inicial de productos. Probar posibles mejoras midiendo la actividad D1 y D7, sin asumir que conocemos la causa de la caída.
 4. **Monitorear cohortes y segmentos.** Observar tendencias antes de actuar por diferencias descriptivas pequeñas.
 5. **Recoger más observaciones de compra.** Se necesita un mayor número de conversiones para comparar países con más confianza.
 
@@ -160,7 +163,7 @@ La base SQLite original permanece sin modificaciones. La limpieza necesaria se a
 | 1 | ¿Podemos confiar en los datos? | Python, SQLite, Pandas | [01_data_exploration](notebooks/01_data_exploration.ipynb) |
 | 2 | ¿Dónde dejan de avanzar los usuarios? | SQL (CTEs, joins, funciones de ventana), Python | [02_funnel_analysis](notebooks/02_funnel_analysis.ipynb) · [SQL de funnel](sql/01_funnel_analysis.sql) |
 | 3 | ¿Siguen activos los usuarios después del registro? | SQL, Pandas, Matplotlib | [03_retention_analysis](notebooks/03_retention_analysis.ipynb) · [SQL de retención](sql/02_retention_analysis.sql) |
-| 4 | ¿Cómo comunicamos los resultados? | HTML, visualizaciones interactivas | [Dashboard](dashboard/mercadolibre_dashboard_ejecutivo.html) |
+| 4 | ¿Cómo comunicamos los resultados? | HTML, visualizaciones interactivas | [Dashboard](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html) |
 
 Los notebooks y consultas utilizan una fuente SQLite local. Los resultados de SQL se contrastaron entre los notebooks y las consultas independientes.
 
@@ -173,7 +176,7 @@ Los notebooks y consultas utilizan una fuente SQLite local. Los resultados de SQ
 - **Embudo estricto:** exige las siete etapas en orden, incluso entre sesiones distintas. Eventos ausentes o fuera de orden reducen el conteo aunque haya una compra registrada.
 - **Calidad temporal:** `event_date` requirió normalización y `event_times` tiene precisión limitada; el orden registrado depende de esas limitaciones.
 - **Poblaciones distintas:** las tablas de funnel y retención presentan cantidades y períodos diferentes; no se validó su relación usuario a usuario.
-- **Significado de retención:** D7, D14, D21 y D28 miden actividad en días puntuales, no participación continua ni recompra.
+- **Significado de retención:** los porcentajes D0–D28 miden actividad en días concretos, no participación continua, abandono definitivo ni recompra. Un usuario inactivo en D1 puede regresar más adelante.
 - **Causalidad:** las diferencias observadas no explican sus causas; las acciones sugeridas requieren investigación y pruebas adicionales.
 
 ---
@@ -226,7 +229,7 @@ Ejecuta los notebooks en orden numérico (con `notebooks/` como directorio de tr
 - [Análisis del embudo de conversión](notebooks/02_funnel_analysis.ipynb)
 - [Análisis de retención](notebooks/03_retention_analysis.ipynb)
 
-Las [consultas SQL](sql/) se pueden ejecutar por separado en SQLite, una sentencia a la vez. El [dashboard interactivo](dashboard/mercadolibre_dashboard_ejecutivo.html) se puede abrir en un navegador sin acceder a la base de datos.
+Las [consultas SQL](sql/) se pueden ejecutar por separado en SQLite, una sentencia a la vez. El [dashboard interactivo](https://camilalealle.github.io/mercadolibre-funnel-retention-analysis/dashboard/mercadolibre_dashboard_ejecutivo.html) se puede abrir en un navegador sin acceder a la base de datos.
 
 </details>
 
